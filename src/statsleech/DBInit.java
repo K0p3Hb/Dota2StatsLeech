@@ -1,5 +1,6 @@
 package statsleech;
 
+import java.beans.Statement;
 import java.sql.*;
 import java.util.logging.*;
 
@@ -29,6 +30,14 @@ public class DBInit {
             //Создаём соединение
             connect = DriverManager.getConnection(this.url, this.name, this.password);
             System.out.println("Соединение установлено");
+            
+            java.sql.Statement statement = null;
+            
+            statement = connect.createStatement();
+            
+            if(!statement.execute("create table accounts (account_id bigint primary key, account_name varchar)"))
+            	System.out.println("Базa аккаунтов создана");
+            		
 		}
 		
 		catch (Exception ex){

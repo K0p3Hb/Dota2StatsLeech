@@ -6,5 +6,8 @@ public class Leech {
 		
 		
 		
+		DBInit init = new DBInit("jdbc:postgresql://localhost:5432/Dota2stat","postgres","qwerty");
+		init.Initialize();
+		
 	}
 }
