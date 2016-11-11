@@ -32,7 +32,7 @@ public class Leech2DB {
 		try{
 			//Загружаем драйвер
             Class.forName("org.postgresql.Driver");
-            System.out.println("Драйвер подключен");
+            //System.out.println("Драйвер подключен");
             
             //Создаём соединение
             connect = DriverManager.getConnection(this.url, this.name, this.password);
@@ -111,7 +111,7 @@ public class Leech2DB {
 		try{
 			//Загружаем драйвер
             Class.forName("org.postgresql.Driver");
-            System.out.println("Драйвер подключен");
+            //System.out.println("Драйвер подключен");
             
             //Создаём соединение
             connect = DriverManager.getConnection(this.url, this.name, this.password);
@@ -126,18 +126,21 @@ public class Leech2DB {
             
             long id; 
             
+            ResultSet rs = null;
+            
             for(MatchDetailPlayer player : List) {
             	
             	id = player.getAccountId();
             	
             	//если такого аккаунта ещё нет в таблице то добавляем запрос в пакет
-            	if (!st.execute("select * from accounts where account_id = " + id)){
+            	rs = st.executeQuery("select * from accounts where account_id = " + id);
+            	if (!rs.next()){
             		 statement.setLong(1, id);
             		 statement.addBatch();
             	 }
             }
             
-            statement.executeLargeBatch();
+            statement.executeBatch();
 		}
 		catch(Exception ex){
 			//выводим наиболее значимые сообщения
@@ -163,7 +166,7 @@ public class Leech2DB {
 				try{
 					//Загружаем драйвер
 		            Class.forName("org.postgresql.Driver");
-		            System.out.println("Драйвер подключен");
+		            //System.out.println("Драйвер подключен");
 		            
 		            //Создаём соединение
 		            connect = DriverManager.getConnection(this.url, this.name, this.password);
@@ -178,18 +181,20 @@ public class Leech2DB {
 		            
 		            int id; 
 		            
+		            ResultSet rs = null;
+		            
 		            for(Item item : List) {
 		            	
 		            	id = item.getId();
 		            	
 		            	//если такого предмета ещё нет в таблице то добавляем запрос в пакет
-		            	if (!st.execute("select * from items where item_id = " + id)){
+		            	rs = st.executeQuery("select * from items where item_id = " + id);
+		            	if (!rs.next()){
 		            		 statement.setInt(1, id);
-		            		 statement.addBatch();
+		            		 statement.executeUpdate();
 		            	 }
 		            }
 		            
-		            statement.executeLargeBatch();
 				}
 				catch(Exception ex){
 					//выводим наиболее значимые сообщения
@@ -215,7 +220,7 @@ public class Leech2DB {
 				try{
 					//Загружаем драйвер
 		            Class.forName("org.postgresql.Driver");
-		            System.out.println("Драйвер подключен");
+		            //System.out.println("Драйвер подключен");
 		            
 		            //Создаём соединение
 		            connect = DriverManager.getConnection(this.url, this.name, this.password);
@@ -230,18 +235,21 @@ public class Leech2DB {
 		            
 		            int id; 
 		            
+		            ResultSet rs = null;
+		            
 		            for(MatchDetailPlayer player : List) {
 		            	
 		            	id = player.getHeroId();
 		            	
 		            	//если такого героя ещё нет в таблице то добавляем запрос в пакет
-		            	if (!st.execute("select * from heroes where hero_id = " + id)){
+		            	rs = st.executeQuery("select * from heroes where hero_id = " + id);
+		            	if (!rs.next()){
 		            		 statement.setInt(1, id);
 		            		 statement.addBatch();
 		            	 }
 		            }
-		            
 		            statement.executeBatch();
+		            
 				}
 				catch(Exception ex){
 					//выводим наиболее значимые сообщения
@@ -268,7 +276,7 @@ public class Leech2DB {
 			try{
 				//Загружаем драйвер
 		        Class.forName("org.postgresql.Driver");
-		        System.out.println("Драйвер подключен");
+		        //System.out.println("Драйвер подключен");
 		            
 		        //Создаём соединение
 		        connect = DriverManager.getConnection(this.url, this.name, this.password);
@@ -278,22 +286,65 @@ public class Leech2DB {
 		        java.sql.Statement st = null;
 		            
 		        //подготавливаем запрос на добавление записи с параметром
-		        statement = connect.prepareStatement("insert into items (item_id) values (?)");
+		        statement = connect.prepareStatement("insert into matches (match_id, duration, game_mode, radiant_win,"
+		        		+ "top_hero_damage, top_last_hits, top_killer, top_tower_damage)"
+		        		+ " values (?,?,?,?,?,?,?,?)");
 		        st=connect.createStatement();
 		            
-		        long id = match.getMatchId(); 
+		        long id = match.getMatchId();
+		        
+		        long tmpkill = 0, tmplast = 0, tmptower = 0, tmpherod = 0, tmp = 1,
+		        		top_hero = 0, top_tower = 0, top_last = 0, top_killer = 0;
+
 		            
+		        ResultSet rs = null;
+		        
 		        //если такого матча ещё нет в таблице то добавляем запрос в пакет
-		        if (!st.execute("select * from matches where match_id = " + id)){
-		            statement.setLong(1, id);
-		            statement.addBatch();
-		            }
-		         statement.executeBatch();
+		        rs = st.executeQuery("select * from matches where match_id = " + id);
+		        if (!rs.next()){
+		        	
+		        	for(MatchDetailPlayer player:match.getPlayers()){
+		        		
+		        		tmp  = player.getHeroDamageDealt();
+		        		if(tmpherod < tmp){
+		        			top_hero = player.getAccountId();
+		        			tmpherod = tmp;
+		        		}
+		        		
+		        		tmp = player.getLastHits();
+		        		if(tmplast < tmp){
+		        			top_last = player.getAccountId();
+		        			tmplast = tmp;
+		        		}
+		        		
+		        		tmp = player.getKills();
+		        		if(tmpkill < tmp){
+		        			top_killer = player.getAccountId();
+		        			tmpkill = tmp;
+		        		}
+		        		
+		        		tmp = player.getTowerDamageDealt();
+		        		if(tmptower < tmp){
+		        			top_tower = player.getAccountId();
+		        			tmptower = tmp;
+		        		}
+		        		
+		        	}
+		        	statement.setLong(1, id);
+		            statement.setInt(2, match.getDurationOfMatch());
+		            statement.setInt(3, match.getGameMode().getValue());
+		            statement.setBoolean(4, match.didRadianWin());
+		            statement.setLong(5, top_hero);
+		            statement.setLong(6, top_last);
+		            statement.setLong(7, top_killer);
+		            statement.setLong(8, top_tower);
+		            statement.executeUpdate();
+		        }
 
 			}
 			catch(Exception ex){
-			//выводим наиболее значимые сообщения
-		    Logger.getLogger(Leech2DB.class.getName()).log(Level.SEVERE, null, ex);
+				//выводим наиболее значимые сообщения
+				Logger.getLogger(Leech2DB.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			finally{
 				try{
