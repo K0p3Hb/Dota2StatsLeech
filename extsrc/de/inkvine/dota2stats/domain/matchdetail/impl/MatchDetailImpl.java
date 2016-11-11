@@ -21,6 +21,7 @@ public class MatchDetailImpl implements MatchDetail {
 	private static final String KEY_POSITIVE_VOTES = "positive_votes";
 	private static final String KEY_NEGATIVE_VOTES = "negative_votes";
 	private static final String KEY_GAME_MODE = "game_mode";
+	private static final String KEY_MATCH_ID = "match_id"; 
 	private Map<String, Object> jsonMap;
 
 	public MatchDetailImpl(Map<String, Object> map) {
@@ -115,6 +116,13 @@ public class MatchDetailImpl implements MatchDetail {
 
 		return returnablePlayers;
 		
+	}
+
+	
+	@Override
+	public long getMatchId() {
+		
+		return ((Double) jsonMap.get(KEY_MATCH_ID)).longValue();
 	}
 
 }

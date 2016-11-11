@@ -1,5 +1,9 @@
 package statsleech;
 
+import de.inkvine.dota2stats.Dota2Stats;
+import de.inkvine.dota2stats.impl.Dota2StatsImpl;
+import de.inkvine.dota2stats.domain.matchdetail.MatchDetailPlayer;
+
 public class Leech {
 
 	public static void main(String args []) {
@@ -10,6 +14,11 @@ public class Leech {
 		
 		//в случае, если база пустая, создаём структуру таблиц
 		//init.Initialize();
+		
+		//подключение к АПИ с моим ключём
+		Dota2Stats stats = new Dota2StatsImpl("D796311CB1B7596E851E183264FAB02A");
+		
+		
 		
 		
 	}

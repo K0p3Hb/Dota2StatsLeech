@@ -26,5 +26,7 @@ public interface MatchDetail {
 	public GameMode getGameMode();
 
 	public List<MatchDetailPlayer> getPlayers();
+	
+	public long getMatchId();
 
 }
