@@ -14,6 +14,7 @@ public class ItemImpl implements Item{
 		item_id = (Integer) null;
 	}
 	
+	@Override
 	public String toString(){
 		
 		StringBuilder sb = new StringBuilder();
@@ -21,6 +22,7 @@ public class ItemImpl implements Item{
 		return sb.toString();
 	}
 	
+	@Override
 	public int getId() {
 		
 		return item_id;
