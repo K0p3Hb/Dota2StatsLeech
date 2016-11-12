@@ -21,7 +21,7 @@ public class Leech {
 		Leech2DB init = new Leech2DB("jdbc:postgresql://localhost:5432/Dota2stat","postgres","qwerty");
 		
 		//в случае, если база пустая, создаём структуру таблиц
-		//init.initialize();
+		init.initialize();
 		
 		//подключение к АПИ с моим ключём
 		Dota2Stats stats = new Dota2StatsImpl("D796311CB1B7596E851E183264FAB02A");
