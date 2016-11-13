@@ -22,27 +22,28 @@ public class Leech {
 		// подключение к API с моим ключём
 		Dota2Stats stats = new Dota2StatsImpl("D796311CB1B7596E851E183264FAB02A");
 		try {
-			/*
-			 * MatchHistory history = stats.getMostRecentMatchHistory();
-			 * List<MatchOverview> overviews = history.getMatchOverviews();
-			 * MatchDetail detail = null;
-			 * List <MatchDetailPlayer> pldetail = null; 
-			 * for (MatchOverview match : overviews){
-			 * detail = stats.getMatchDetails(match.getMatchId());
-			 * pldetail = detail.getPlayers();
-			 * init.updateAccounts(pldetail);
-			 * init.updateHeroes(pldetail);
-			 * for (MatchDetailPlayer player:pldetail)
-			 * init.updateItems(player.getItems());
-			 * init.updateMatches(detail); }
-			 */
-			MatchDetail detail = stats.getMatchDetails(1762832017L);
+
+      MatchHistory history = stats.getMostRecentMatchHistory();
+      List<MatchOverview> overviews = history.getMatchOverviews();
+      MatchDetail detail = null;
+      List<MatchDetailPlayer> pldetail = null;
+      for (MatchOverview match : overviews) {
+        detail = stats.getMatchDetails(match.getMatchId());
+        pldetail = detail.getPlayers();
+        init.updateAccounts(pldetail);
+        init.updateHeroes(pldetail);
+        for (MatchDetailPlayer player : pldetail)
+          init.updateItems(player.getItems());
+        init.updateMatchesAndSlots(detail);
+      }
+			 
+			/*MatchDetail detail = stats.getMatchDetails(1762832017L);
 			List<MatchDetailPlayer> players = detail.getPlayers();
 			init.updateAccounts(players);
 			init.updateHeroes(players);
 			for (MatchDetailPlayer player : players)
 				init.updateItems(player.getItems());
-			init.updateMatchesAndSlots(detail);
+			init.updateMatchesAndSlots(detail);*/
 			// init.updatePlayerSlots(players, detail.getMatchId());
 		} catch (Dota2StatsAccessException e1) {
 			e1.printStackTrace();}

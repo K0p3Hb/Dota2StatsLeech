@@ -34,27 +34,25 @@ public class Leech2DB {
 			java.sql.Statement statement = null;
 			statement = connect.createStatement();
 			// создаём таблицу аккаунтов
-			/* if(! */statement.execute(
-					"create table if not exists accounts (account_id bigint primary key," + " account_name varchar)");// )
+			statement.execute("create table if not exists accounts (account_id bigint primary key, account_name varchar)");
+			statement.execute("insert into accounts (account_id) values (0)");
 			// System.out.println("Базa аккаунтов создана");
 			// создаём таблицу вещей
-			/* if(! */statement.execute(
-					"create table if not exists items (item_id int primary key, item_name varchar, image_url varchar)");// )
+			statement.execute("create table if not exists items (item_id int primary key, item_name varchar, image_url varchar)");
 			// System.out.println("Базa вещей создана");
 			// создаём таблицу героев
-			/* if(! */statement.execute(
-					"create table if not exists heroes (hero_id int primary key, hero_name varchar, image_url varchar)");// )
+			statement.execute("create table if not exists heroes (hero_id int primary key, hero_name varchar, image_url varchar)");
 			// System.out.println("Базa героев создана");
 			// создаём таблицу матчей
-			/* if(! */statement.execute(
+			statement.execute(
 					"create table if not exists matches (match_id bigint primary key, duration int," + " game_mode int,"
 							+ " radiant_win boolean, top_hero_damage bigint references accounts(account_id),"
 							+ " top_last_hits bigint references accounts(account_id),"
 							+ " top_killer bigint references accounts(account_id),"
-							+ "top_tower_damage bigint references accounts(account_id))");// )
+							+ "top_tower_damage bigint references accounts(account_id))");
 			// System.out.println("Базa матчей создана");
 			// создаём таблицу всех слотов игроков
-			/* if(! */statement.execute("create table if not exists all_player_slots"
+			statement.execute("create table if not exists all_player_slots"
 					+ " (match_id bigint references matches(match_id),"
 					+ " hero_id int references heroes(hero_id),"
 					+ " account_id bigint references accounts(account_id),"
@@ -64,7 +62,7 @@ public class Leech2DB {
 					+ " item_3 int references items(item_id)," + " item_4 int references items(item_id),"
 					+ " item_5 int references items(item_id)," + " hero_damage bigint," + " percent_damage int,"
 					+ " tower_damage bigint," + " percent_tower int," + " last_hits int," + " gold bigint,"
-					+ " percent_kills int," + " unique (match_id, account_id))");// )
+					+ " percent_kills int," + " unique (match_id, account_id))");
 			// System.out.println("Базa всех слотов игроков создана");
 		}
 		catch (Exception ex) {
@@ -190,8 +188,8 @@ public class Leech2DB {
 					statement.setInt(1, id);
 					statement.addBatch();
 				}
-			}
-			statement.executeBatch();
+				statement.executeBatch();
+			}		
 		} catch (Exception ex) {
 			// выводим наиболее значимые сообщения
 			Logger.getLogger(Leech2DB.class.getName()).log(Level.SEVERE, null, ex);
@@ -234,16 +232,17 @@ public class Leech2DB {
 					tmpTower1 = 0, tmpHeroDamage1 = 0, topHero = 0, topTower = 0, topLast = 0, topKiller = 0,
 					topHero1 = 0, topTower1 = 0, topKiller1 = 0, radiantHero = 0, direHero = 0, radiantTower = 1,
 					direTower = 1;
-			int radiantKill = 0, direKill = 0;
+			int radiantKill = 0, direKill = 0, slot;
 
 			List<MatchDetailPlayer> players = match.getPlayers();
 
 			for (MatchDetailPlayer player : players) {
+			  slot=player.getPlayerSlots();
 				// считаем общий урон команд по героям и ищем нанёсших больший
 				// урон
 				tmp = player.getHeroDamageDealt();
 				// команда светлых
-				if (player.getPlayerSlots() < 5) {
+				if ( slot < 5) {
 					radiantHero += tmp;
 					if (tmpHeroDamage < tmp) {
 						topHero = player.getAccountId();
@@ -251,7 +250,7 @@ public class Leech2DB {
 					}
 				}
 				// команда тёмных
-				if (player.getPlayerSlots() > 127) {
+				if (slot > 127) {
 					direHero += tmp;
 					if (tmpHeroDamage < tmp) {
 						topHero1 = player.getAccountId();
@@ -268,7 +267,7 @@ public class Leech2DB {
 				// считаем убийства команд
 				tmp = player.getKills() + player.getAssists();
 				// светлые
-				if (player.getPlayerSlots() < 5) {
+				if (slot < 5) {
 					radiantKill += player.getKills();
 					if (tmpKill < tmp) {
 						topKiller = player.getAccountId();
@@ -276,7 +275,7 @@ public class Leech2DB {
 					}
 				}
 				// тёмные
-				if (player.getPlayerSlots() > 127) {
+				if (slot > 127) {
 					direKill += player.getKills();
 					if (tmpKill < tmp) {
 						topKiller1 = player.getAccountId();
@@ -287,7 +286,7 @@ public class Leech2DB {
 				// общий урон команд по строениям
 				tmp = player.getTowerDamageDealt();
 				// светлые
-				if (player.getPlayerSlots() < 5) {
+				if (slot < 5) {
 					radiantTower += tmp;
 					if (tmpTower < tmp) {
 						topTower = player.getAccountId();
@@ -295,7 +294,7 @@ public class Leech2DB {
 					}
 				}
 				// тёмные
-				if (player.getPlayerSlots() > 127) {
+				if (slot > 127) {
 					direTower += tmp;
 					if (tmpTower < tmp) {
 						topTower1 = player.getAccountId();
@@ -354,6 +353,7 @@ public class Leech2DB {
 			int i;
 			for (MatchDetailPlayer player : players) {
 				id = player.getAccountId();
+				slot = player.getPlayerSlots();
 				i = 1;
 				// если такого аккаунта ещё нет в таблице то добавляем запрос в
 				// пакет
@@ -369,7 +369,7 @@ public class Leech2DB {
 					// пишем в таблицу номер аккауньа игрока
 					statement1.setLong(i++, id);
 					// пишем в таблицу номер слота
-					statement1.setInt(i++, player.getPlayerSlots());
+					statement1.setInt(i++, slot);
 					// пишем в таблицу количество убийств игрока
 					statement1.setInt(i++, player.getKills());
 					// пишем в таблицу количество смертей игрока
@@ -383,7 +383,7 @@ public class Leech2DB {
 					statement1.setLong(i++, player.getHeroDamageDealt());
 					// пишем в таблицу процент нанес ённого игроком урона от
 					// командного по героям
-					if (player.getPlayerSlots() < 5)
+					if (slot < 5)
 						statement1.setInt(i++, (int) ((player.getHeroDamageDealt() * 100f) / radiantHero));
 					else
 						statement1.setInt(i++, (int) ((player.getHeroDamageDealt() * 100f) / direHero));
@@ -392,7 +392,7 @@ public class Leech2DB {
 					statement1.setLong(i++, player.getTowerDamageDealt());
 					// пишем в таблицу процент нанесённого игроком урона от
 					// командного по строениям
-					if (player.getPlayerSlots() < 5)
+					if (slot < 5)
 						statement1.setInt(i++, (int) ((player.getTowerDamageDealt() * 100f) / radiantTower));
 					else
 						statement1.setInt(i++, (int) ((player.getTowerDamageDealt() * 100f) / direTower));
@@ -401,7 +401,7 @@ public class Leech2DB {
 					// пишем в таблицу количество заработанного золота
 					statement1.setInt(i++, player.getGoldPerMinute() * (match.getDurationOfMatch() / 60));
 					// пишем в таблицу процент участия игрока в убийствах
-					if (player.getPlayerSlots() < 5)
+					if (slot < 5)
 						statement1.setInt(i++,
 								(int) (((player.getKills() + player.getAssists()) * 100f) / radiantKill));
 					else
