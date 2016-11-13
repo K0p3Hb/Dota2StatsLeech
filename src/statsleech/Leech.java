@@ -17,13 +17,13 @@ public class Leech {
 	public static void main(String args []) {
 		
 		
-		//создаём подключение к базе
+		//СЃРѕР·РґР°С‘Рј РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє Р±Р°Р·Рµ
 		Leech2DB init = new Leech2DB("jdbc:postgresql://localhost:5432/Dota2stat","postgres","qwerty");
 		
-		//в случае, если база пустая, создаём структуру таблиц
+		//РµСЃР»Рё Р±Р°Р·Р° РїСѓСЃС‚Р°СЏ, С‚Рѕ СЃРѕР·РґР°С‘Рј СЃС‚СЂСѓРєС‚СѓСЂСѓ С‚Р°Р±Р»РёС†
 		init.initialize();
 		
-		//подключение к АПИ с моим ключём
+		//РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє API СЃ РјРѕРёРј РєР»СЋС‡С‘Рј
 		Dota2Stats stats = new Dota2StatsImpl("D796311CB1B7596E851E183264FAB02A");
 		
 		try {
