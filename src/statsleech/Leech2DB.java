@@ -1,6 +1,5 @@
 package statsleech;
 
-import java.beans.Statement;
 import java.sql.*;
 import java.util.List;
 import java.util.logging.*;
@@ -60,7 +59,7 @@ public class Leech2DB {
           + " item_2 int references items(item_id)," + " item_3 int references items(item_id),"
           + " item_4 int references items(item_id)," + " item_5 int references items(item_id)," + " hero_damage bigint,"
           + " percent_damage int," + " tower_damage bigint," + " percent_tower int," + " last_hits int,"
-          + " gold bigint," + " percent_kills int," + " unique (match_id, account_id))");
+          + " gold bigint," + " xp bigint," + " percent_kills int," + " unique (match_id, account_id))");
       // System.out.println("Базa всех слотов игроков создана");
     } catch (Exception ex) {
       // выводим наиболее значимые сообщения
@@ -204,7 +203,7 @@ public class Leech2DB {
     }
   }
   
-  // добавление записей в таблицу матчей
+  // добавление записей в таблицу матчей и слотов
   public void updateMatchesAndSlots(MatchDetail match) {
     // создаём пустой коннект к базе
     Connection connect = null;
@@ -222,8 +221,8 @@ public class Leech2DB {
               + " top_last_hits," + " top_killer," + " top_tower_damage)" + " values (?,?,?,?,?,?,?,?)");
       statement1 = connect.prepareStatement("insert into all_player_slots (match_id, hero_id, account_id,"
           + "slot_number," + "kills, deaths, assists, item_0, item_1, item_2, item_3, item_4, item_5,"
-          + "hero_damage, percent_damage, tower_damage, percent_tower ," + " last_hits, gold, percent_kills)"
-          + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+          + "hero_damage, percent_damage, tower_damage, percent_tower ," + " last_hits, gold, xp, percent_kills)"
+          + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
       long id = match.getMatchId();
       long tmpKill = 0, tmpLast = 0, tmpTower = 0, tmpHeroDamage = 0, tmp = 1, tmpKill1 = 0, tmpTower1 = 0,
           tmpHeroDamage1 = 0, topHero = 0, topTower = 0, topLast = 0, topKiller = 0, topHero1 = 0, topTower1 = 0,
@@ -351,8 +350,7 @@ public class Leech2DB {
         id = player.getAccountId();
         slot = player.getPlayerSlots();
         i = 1;
-        // если такого аккаунта ещё нет в таблице то добавляем запрос в
-        // пакет
+        // если такого аккаунта ещё нет в таблице то добавляем запрос в пакет
         st = connect.prepareStatement("select * from all_player_slots where match_id = ? and account_id = ?");
         st.setLong(1, match.getMatchId());
         st.setLong(2, id);
@@ -396,6 +394,8 @@ public class Leech2DB {
           statement1.setInt(i++, player.getLastHits());
           // пишем в таблицу количество заработанного золота
           statement1.setInt(i++, player.getGoldPerMinute() * (match.getDurationOfMatch() / 60));
+          // пишем в таблицу количество заработанного опыта
+          statement1.setInt(i++, player.getXPPerMinute() * (match.getDurationOfMatch() / 60));
           // пишем в таблицу процент участия игрока в убийствах
           if (slot < 5)
             statement1.setInt(i++, (int) (((player.getKills() + player.getAssists()) * 100f) / radiantKill));
