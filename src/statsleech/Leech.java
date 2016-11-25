@@ -18,11 +18,11 @@ public class Leech {
     // создаём подключение к базе
     Leech2DB init = new Leech2DB("jdbc:postgresql://localhost:5432/Dota2stat", "postgres", "qwerty");
     // если база пустая, то создаём структуру таблиц
-    // init.initialize();
+     init.initialize();
     // подключение к API с моим ключём
     Dota2Stats stats = new Dota2StatsImpl("D796311CB1B7596E851E183264FAB02A");
     try {
-      
+     /* 
       MatchHistory history = stats.getMostRecentMatchHistory();
       List<MatchOverview> overviews = history.getMatchOverviews();
       MatchDetail detail = null;
@@ -36,15 +36,15 @@ public class Leech {
           init.updateItems(player.getItems());
         init.updateMatchesAndSlots(detail);
       }
+      */
       
-      /*
-       * MatchDetail detail = stats.getMatchDetails(1762832017L);
-       * List<MatchDetailPlayer> players = detail.getPlayers();
-       * init.updateAccounts(players); init.updateHeroes(players); for
-       * (MatchDetailPlayer player : players)
-       * init.updateItems(player.getItems());
-       * init.updateMatchesAndSlots(detail);
-       */
+        MatchDetail detail = stats.getMatchDetails(1762832017L);
+        List<MatchDetailPlayer> players = detail.getPlayers();
+        init.updateAccounts(players); init.updateHeroes(players); for
+        (MatchDetailPlayer player : players)
+        init.updateItems(player.getItems());
+       init.updateMatchesAndSlots(detail);
+       
       // init.updatePlayerSlots(players, detail.getMatchId());
     } catch (Dota2StatsAccessException e1) {
       e1.printStackTrace();

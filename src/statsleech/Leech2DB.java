@@ -233,8 +233,7 @@ public class Leech2DB {
       
       for (MatchDetailPlayer player : players) {
         slot = player.getPlayerSlots();
-        // считаем общий урон команд по героям и ищем нанёсших больший
-        // урон
+        // считаем общий урон команд по героям и ищем нанёсших больший урон
         tmp = player.getHeroDamageDealt();
         // команда светлых
         if (slot < 5) {
@@ -247,7 +246,7 @@ public class Leech2DB {
         // команда тёмных
         if (slot > 127) {
           direHero += tmp;
-          if (tmpHeroDamage < tmp) {
+          if (tmpHeroDamage1 < tmp) {
             topHero1 = player.getAccountId();
             tmpHeroDamage1 = tmp;
           }
@@ -272,7 +271,7 @@ public class Leech2DB {
         // тёмные
         if (slot > 127) {
           direKill += player.getKills();
-          if (tmpKill < tmp) {
+          if (tmpKill1 < tmp) {
             topKiller1 = player.getAccountId();
             tmpKill1 = tmp;
           }
@@ -298,18 +297,18 @@ public class Leech2DB {
         }
       }
       // выясняем кто самый крутой забияка на деревне
-      if (tmpHeroDamage / 500 + ((tmpHeroDamage * 100f) / radiantHero) / 2 > tmpHeroDamage1 / 500
-          + ((tmpHeroDamage1 * 100f) / direHero) / 2)
+      if ((tmpHeroDamage / 500 + ((tmpHeroDamage * 100f) / radiantHero) / 2) > (tmpHeroDamage1 / 500
+          + ((tmpHeroDamage1 * 100f) / direHero) / 2))
         tmpHeroDamage = topHero;
       else
         tmpHeroDamage = topHero1;
       // выясняем кто первый киллер на деревне
-      if (tmpKill + ((tmpKill * 100f) / radiantKill) / 2 > tmpKill1 / 500 + ((tmpKill1 * 100f) / direKill) / 2)
+      if ((tmpKill + ((tmpKill * 100f) / radiantKill) / 2) > (tmpKill1 + ((tmpKill1 * 100f) / direKill) / 2))
         tmpKill = topKiller;
       else
         tmpKill = topKiller1;
       // выясняем кто лучше долбил по строениям
-      if (tmpTower / 100 + ((tmpTower * 100f) / radiantTower) / 2 > tmpTower1 / 500
+      if (tmpTower / 100 + ((tmpTower * 100f) / radiantTower) / 2 > tmpTower1 / 100
           + ((tmpTower1 * 100f) / direTower) / 2)
         tmpTower = topTower;
       else
@@ -331,17 +330,17 @@ public class Leech2DB {
         // пишем в таблицу номер аккаунта игрока который нанёс наибоьшее
         // количество урона и больший процент урона от своей команды по
         // героям
-        statement.setLong(5, topHero);
+        statement.setLong(5, tmpHeroDamage);
         // пишем в таблицу номер аккаунта игрока который добил больше
         // всего крипов
         statement.setLong(6, topLast);
         // пишем в таблицу номер аккаунта игрока который убил и помог
         // убить больше всех
-        statement.setLong(7, topKiller);
+        statement.setLong(7, tmpKill);
         // пишем в таблицу номер аккаунта игрока который нанёс наибоьшее
         // количество урона и больший процент урона от своей команды по
         // строениям
-        statement.setLong(8, topTower);
+        statement.setLong(8, tmpTower);
         statement.executeUpdate();
       }
       // добавляем слоты в таблицу, если их ещё нет там
