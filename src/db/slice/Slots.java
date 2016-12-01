@@ -26,6 +26,8 @@ public class Slots {
   private static final String GOLD_FIELD_MAME = "gold";
   private static final String XP_FIELD_MAME = "xp";
   private static final String KILLER_FIELD_MAME = "percent_kills";
+
+  public Slots(){}
   
   @DatabaseField(columnName = MATCH_FIELD_MAME,foreign = true, uniqueCombo = true)
   private long match;
