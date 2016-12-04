@@ -2,6 +2,8 @@ package db.slice;
 
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
+import de.inkvine.dota2stats.domain.matchdetail.MatchDetail;
+import de.inkvine.dota2stats.domain.matchdetail.MatchDetailPlayer;
 
 @DatabaseTable(tableName = "all_player_slots")
 public class Slots {
@@ -28,6 +30,10 @@ public class Slots {
   private static final String KILLER_FIELD_MAME = "percent_kills";
 
   public Slots(){}
+  
+  public Slots(MatchDetail m){
+    
+  }
   
   @DatabaseField(columnName = MATCH_FIELD_MAME,foreign = true, uniqueCombo = true)
   private long match;
