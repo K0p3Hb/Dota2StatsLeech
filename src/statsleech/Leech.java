@@ -53,10 +53,10 @@ public class Leech {
           Heroes hero = new Heroes();
           for(MatchDetailPlayer player:players){
             hero = daoHero.queryForId(player.getHeroId());
-            co.countFightSP(detail, player.getPlayerSlots(), connectionSource, hero.getKiller());
-            co.countTowerSP(detail, player.getPlayerSlots(), connectionSource, hero.getDestroyer());
-            co.countGoldenSP(detail, player.getPlayerSlots(), connectionSource, hero.getGold(),hero.getCreeper());
-            co.countSurvivalSP(detail, player.getPlayerSlots(), connectionSource, hero.getDeath(), hero.getHealer());
+            co.countFightSP(detail, player.getPlayerSlots(), connectionSource, hero.getKiller(), daoHero);
+            co.countTowerSP(detail, player.getPlayerSlots(), connectionSource, hero.getDestroyer(), daoHero);
+            co.countGoldenSP(detail, player.getPlayerSlots(), connectionSource, hero.getGold(),hero.getCreeper(), daoHero);
+            co.countSurvivalSP(detail, player.getPlayerSlots(), connectionSource, hero.getDeath(), hero.getHealer(), daoHero);
           }
           //Heroes hero = new Heroes();
           //hero = daoHero.queryForId(100);
