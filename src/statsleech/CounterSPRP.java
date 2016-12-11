@@ -27,7 +27,8 @@ public class CounterSPRP {
   
   // функция считает СП для выбранного слота, полученные за урон героям и
   // процент участия в командных убийствах
-  public void countFightSP(MatchDetail match, int slot, JdbcConnectionSource connect, float killer, Dao<Heroes, Integer> daoHero ) {
+  public void countFightSP(MatchDetail match, int slot, JdbcConnectionSource connect, float killer,
+      Dao<Heroes, Integer> daoHero) {
     float spDamage = 0, spActivity = 0, sp = 0;
     float currentDamage = 0, currentActivity = 0, allDamage = 0, allActivity = 0, allIdealDamage = 0;
     for (MatchDetailPlayer player : match.getPlayers()) {
@@ -35,7 +36,7 @@ public class CounterSPRP {
         allDamage += (float) player.getHeroDamageDealt() / (match.getDurationOfMatch() / 60f);
         allActivity += player.getKills();
         try {
-          allIdealDamage+=daoHero.queryForId(player.getHeroId()).getKiller();
+          allIdealDamage += daoHero.queryForId(player.getHeroId()).getKiller();
         } catch (SQLException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -54,13 +55,14 @@ public class CounterSPRP {
     if (sp > 10)
       sp = 10f;
     System.out.println(
-        ">----------------------------<\nslot number = " + slot + "\n" + "Fight SP =5SP + Damage SP + kill/assist SP\n" + sp
-            + "  =  5 + " + spDamage + "  +  " + spActivity + "\n---------------------------");
+        ">----------------------------<\nslot number = " + slot + "\n" + "Fight SP =5SP + Damage SP + kill/assist SP\n"
+            + sp + "  =  5 + " + spDamage + "  +  " + spActivity + "\n---------------------------");
   }
   
   // функция считает СП, полученные за урон строениям
-  public void countTowerSP(MatchDetail match, int slot, JdbcConnectionSource connect, float tower, Dao<Heroes, Integer> daoHero ) {
-    float sp = 0, current_damage = 0, allDamage = 0, allIdealDamage = 0;
+  public void countTowerSP(MatchDetail match, int slot, JdbcConnectionSource connect, float tower,
+      Dao<Heroes, Integer> daoHero) {
+    float sp = 0, current_damage = 0, allDamage = 0, allIdealDamage = 0, spAll = 0;
     for (MatchDetailPlayer player : match.getPlayers()) {
       if (slot < 5 && player.getPlayerSlots() < 5 || slot > 127 && player.getPlayerSlots() > 127) {
         allDamage += player.getTowerDamageDealt() / (match.getDurationOfMatch() / 60f);
@@ -75,16 +77,17 @@ public class CounterSPRP {
       }
     }
     sp = (float) ((((current_damage * 100f) / allDamage) - ((tower * 100f) / allIdealDamage)) * 0.5);
-    sp+=5;
-    if (sp < 0)
+    if (sp < -5)
       sp = (float) 0.01;
-    if (sp > 10)
-      sp = 10;
+    if (sp > 5)
+      sp = 5;
+    spAll = 5 + sp;
     System.out.println("Tower SP = 5 + " + sp + "\n---------------------------");
   }
   
   // считает СП, полученные за добычу золота и добивание крипов
-  public void countGoldenSP(MatchDetail match, int slot, JdbcConnectionSource connect, float gold, float creeper, Dao<Heroes, Integer> daoHero ) {
+  public void countGoldenSP(MatchDetail match, int slot, JdbcConnectionSource connect, float gold, float creeper,
+      Dao<Heroes, Integer> daoHero) {
     float sp = 0, spGold = 0, spCreep = 0, allGold = 0, allCreeps = 0, currentGold = 0, currentCreeps = 0;
     float allIdealGold = 0, allIdealCreeps = 0;
     for (MatchDetailPlayer player : match.getPlayers()) {
@@ -105,7 +108,7 @@ public class CounterSPRP {
       }
     }
     spGold = (float) ((((currentGold * 100f) / allGold) - ((gold * 100f) / allIdealGold)) * 0.2);
-    spCreep = (float) ((((currentCreeps*100f)/allCreeps) -((creeper*100f)/allIdealCreeps))*0.3);
+    spCreep = (float) ((((currentCreeps * 100f) / allCreeps) - ((creeper * 100f) / allIdealCreeps)) * 0.3);
     sp = spCreep + spGold + 5;
     if (sp < 0)
       sp = (float) 0.01;
@@ -116,17 +119,18 @@ public class CounterSPRP {
   }
   
   // считает СП, полученные за выживаемость - меньше смертей, больше отхила
-  public void countSurvivalSP(MatchDetail match, int slot, JdbcConnectionSource connect, float deaths, float heal, Dao<Heroes, Integer> daoHero ) {
+  public void countSurvivalSP(MatchDetail match, int slot, JdbcConnectionSource connect, float deaths, float heal,
+      Dao<Heroes, Integer> daoHero) {
     float sp = 0, spHeal = 0, spDeath = 0, allDeath = 0, allHeal = 0, currentDeath = 0, currentHeal = 0;
     float allIdealDeath = 0, allIdealHeal = 0;
     for (MatchDetailPlayer player : match.getPlayers()) {
       if (slot < 5 && player.getPlayerSlots() < 5 || slot > 127 && player.getPlayerSlots() > 127) {
         allDeath += player.getDeaths();
         allHeal += player.getHeroDamageHealt() / (match.getDurationOfMatch() / 60f);
-        try{
+        try {
           allIdealDeath += daoHero.queryForId(player.getHeroId()).getDeath();
           allIdealHeal += daoHero.queryForId(player.getHeroId()).getHealer();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
@@ -136,8 +140,11 @@ public class CounterSPRP {
         }
       }
     }
-    spDeath = (float) ((((deaths  * 100f) / allIdealDeath)- ((currentDeath * 100f) / allDeath)) * 0.3);
-    spHeal =(float) ((((currentHeal*100f)/allHeal)-((heal*100f)/allIdealHeal))*0.2) ;
+    spDeath = (float) ((((deaths * 100f) / allIdealDeath) - ((currentDeath * 100f) / allDeath)) * 0.3);
+    if (currentHeal != 0)
+      spHeal = (float) ((((currentHeal * 100f) / allHeal) - ((heal * 100f) / allIdealHeal)) * 0.2);
+    else
+      spHeal = 0f;
     sp = spHeal + spDeath + 5;
     if (sp < 0)
       sp = (float) 0.01;

@@ -34,7 +34,7 @@ public class MatchDetailPlayerImpl extends MatchOverviewPlayerImpl implements
 	private static final String KEY_GOLD_SPENT = "gold_spent";
 	private static final String KEY_HERO_DAMAGE = "hero_damage";
 	private static final String KEY_TOWER_DAMAGE = "tower_damage";
-	private static final String KEY_HERO_HEALING = "tower_damage";
+	private static final String KEY_HERO_HEALING = "hero_healing";
 	private static final String KEY_LEVEL = "level";
 
 	private static final String KEY_ABILITY_UPGRADES = "ability_upgrades";
